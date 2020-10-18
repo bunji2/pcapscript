@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	usageFmt = "%s file.pcap script.js\n"
+	usageFmt = "Usage: %s file.pcap script.js\n"
 )
 
 var (
