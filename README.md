@@ -19,7 +19,7 @@ sample.js
 //   udp --- layers.UDP
 //   Refernce: https://godoc.org/github.com/google/gopacket/layers
 //
-// built-in functins:
+// built-in functions:
 //   ipaddr(x) --- IP Address
 //   hwaddr(x) --- MAC Address
 //   save(filename, data) --- saves byte sequence to file
