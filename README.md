@@ -1,11 +1,19 @@
-# pcapscript
-PCAPScript
+# PCAPScript
 
+## Requirement
+
++ Win10pcap
+  http://www.win10pcap.org/download/
++ gopacket
+  github.com/google/gopacket
+
+## Usage
 ```
 C:\work\pcapscript>pcapscript
 Usage: pcapscript file.pcap script.js
 ```
 
+## Sample
 sample.js
 ```
 // sample.js
