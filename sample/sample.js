@@ -1,6 +1,6 @@
 // sample.js
 // 
-// パケットデータ：
+// packet data:
 //   arp --- layers.ARP
 //   eth --- layers.Ethernet
 //   ip ---- layers.IPv4
@@ -9,19 +9,19 @@
 //   udp --- layers.UDP
 //   Refernce: https://godoc.org/github.com/google/gopacket/layers
 //
-// 組み込み関数：
-//   ipaddr(x) --- IPアドレス表記
-//   hwaddr(x) --- MACアドレス表記
-//   save(filename, data) --- バイト列をファイルに保存
+// built-in functins:
+//   ipaddr(x) --- IP Address
+//   hwaddr(x) --- MAC Address
+//   save(filename, data) --- saves byte sequence to file
 //
-// その他：
-//   count - パケットの番号
+// other:
+//   count - count of packet
 
 console.log("--------", count, "--------");
 console.log("[Ethernet]", hwaddr(eth.SrcMAC), "->", hwaddr(eth.DstMAC));
 
 if (tcp != null) {
-    // TCP の場合の処理
+    // TCP
     console.log("[TCP]", ipaddr(ip.SrcIP) +":"+ tcp.SrcPort, "->", ipaddr(ip.DstIP) + ":" + tcp.DstPort);
     console.log("\tSeq:", tcp.Seq, "Ack:", tcp.Ack);
     flags = [];
@@ -43,7 +43,7 @@ if (tcp != null) {
     }
 
 } else if (udp != null) {
-    // UDP の場合の処理
+    // UDP
     console.log("[UDP]", ipaddr(ip.SrcIP)+":"+udp.SrcPort, "->", ipaddr(ip.DstIP) + ":" + udp.DstPort);
     if (udp.Payload.length>0) {
         console.log(hex(udp.Payload));
@@ -53,7 +53,7 @@ if (tcp != null) {
     }
 
 } else if (arp != null) {
-    // ARP の場合の処理
+    // ARP
     console.log("[ARP] AddrType:", arp.AddrType, "Protocol:", arp.Protocol);
 	console.log("\tOperation:", arp.Operation);
 	console.log("\tSrcHWAddr:", hwaddr(arp.SourceHwAddress));
@@ -62,7 +62,7 @@ if (tcp != null) {
 	console.log("\tDstProtAddr:", ipaddr(arp.DstProtAddress));
 
 } else if (icmp != null) {
-    // ARP の場合の処理
+    // icmp
     console.log("[IPv4]", ipaddr(ip.SrcIP), "->", ipaddr(ip.DstIP));
 	console.log("[ICMPv4] TypeCode:", icmp.TypeCode);//.GoString())
 	if (icmp.Payload.length > 0) {
@@ -73,6 +73,6 @@ if (tcp != null) {
     }
 
 } else {
-    // その他の場合
+    // other
     console.log("unknown")
 }
