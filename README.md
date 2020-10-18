@@ -3,7 +3,7 @@
 ## Requirement
 
 + [Win10pcap](http://www.win10pcap.org/download/)
-+ [gopacket](https://github.com/google/gopacket)
++ [GoPacket](https://github.com/google/gopacket)
 
 ## Usage
 ```
