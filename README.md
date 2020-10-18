@@ -2,10 +2,8 @@
 
 ## Requirement
 
-+ Win10pcap
-  http://www.win10pcap.org/download/
-+ gopacket
-  github.com/google/gopacket
++ [Win10pcap](http://www.win10pcap.org/download/)
++ [gopacket](https://github.com/google/gopacket)
 
 ## Usage
 ```
