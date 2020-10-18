@@ -1,5 +1,7 @@
 # PCAPScript
 
+This tool handles packets in pcapfile with JavaScript.
+
 ## Requirement
 
 + [Win10pcap](http://www.win10pcap.org/download/)
