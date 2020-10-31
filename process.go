@@ -59,22 +59,58 @@ func (p *Param) processPacket(packet gopacket.Packet) (err error) {
 	//fmt.Println("--------")
 
 	pack := readPacket(packet)
-	p.vm.Set("count", p.Count)
-	p.vm.Set("eth", pack.Ethernet)
-	p.vm.Set("ip", pack.IPv4)
-	p.vm.Set("arp", pack.ARP)
-	p.vm.Set("tcp", pack.TCP)
-	p.vm.Set("udp", pack.UDP)
-	p.vm.Set("icmp", pack.ICMPv4)
-	p.vm.Set("hex", hex.Dump)
-	p.vm.Set("hwaddr", func(bb []byte) string {
+	err = p.vm.Set("count", p.Count)
+	if err != nil {
+		return
+	}
+	err = p.vm.Set("eth", pack.Ethernet)
+	if err != nil {
+		return
+	}
+	err = p.vm.Set("ip", pack.IPv4)
+	if err != nil {
+		return
+	}
+	err = p.vm.Set("arp", pack.ARP)
+	if err != nil {
+		return
+	}
+	err = p.vm.Set("tcp", pack.TCP)
+	if err != nil {
+		return
+	}
+	err = p.vm.Set("udp", pack.UDP)
+	if err != nil {
+		return
+	}
+	err = p.vm.Set("icmp", pack.ICMPv4)
+	if err != nil {
+		return
+	}
+	err = p.vm.Set("hex", hex.Dump)
+	if err != nil {
+		return
+	}
+	err = p.vm.Set("hwaddr", func(bb []byte) string {
 		return net.HardwareAddr(bb).String()
 	})
-	p.vm.Set("ipaddr", func(bb []byte) string {
+	if err != nil {
+		return
+	}
+	err = p.vm.Set("ipaddr", func(bb []byte) string {
 		return net.IP(bb).String()
 	})
-	p.vm.Set("save", saveFile)
+	if err != nil {
+		return
+	}
+	err = p.vm.Set("save", saveFile)
+	if err != nil {
+		return
+	}
 	_, err = p.vm.Run(p.script)
+	if err != nil {
+		return
+	}
 
 	p.Count = p.Count + 1
 	return
@@ -123,8 +159,16 @@ func saveFile(filePath string, bb []byte) {
 	if err != nil {
 		panic(err)
 	}
-	defer w.Close()
-	w.Write(bb)
+	defer func() {
+		err := w.Close()
+		if err != nil {
+			panic(err)
+		}
+	}()
+	_, err = w.Write(bb)
+	if err != nil {
+		panic(err)
+	}
 }
 
 /*

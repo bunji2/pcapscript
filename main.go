@@ -55,7 +55,10 @@ func run() int {
 			break
 		}
 
-		param.processPacket(packet)
+		err = param.processPacket(packet)
+		if err != nil {
+			break
+		}
 	}
 
 	if err == io.EOF {
