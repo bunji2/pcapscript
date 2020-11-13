@@ -103,6 +103,12 @@ func (p *Param) processPacket(packet gopacket.Packet) (err error) {
 	if err != nil {
 		return
 	}
+	err = p.vm.Set("str", func(bb []byte) string {
+		return string(bb)
+	})
+	if err != nil {
+		return
+	}
 	err = p.vm.Set("save", saveFile)
 	if err != nil {
 		return
