@@ -295,6 +295,9 @@ function TCP(n, tcp, ip, eth) {
     if (tcp.PSH) {
 	    flags.push("PSH");
     }
+    if (tcp.FIN) {
+	    flags.push("FIN");
+    }
     console.log("\tFlags:", flags.join(","));
     if (tcp.Payload.length>0) {
         console.log(hex(tcp.Payload));
@@ -387,9 +390,12 @@ C:\work> pcapscript.exe example6.js sample/http.pcap out2
 000001c0  68 65 72 65 61 6c 2e 63  6f 6d 2f 64 65 76 65 6c  |hereal.com/devel|
 000001d0  6f 70 6d 65 6e 74 2e 68  74 6d 6c 0d 0a 0d 0a     |opment.html....|
 ...
+#41 [TCP] 145.254.160.237:3372 -> 65.208.228.223:80
+        Seq: 951058419 Ack: 290236745
+        Flags: ACK,FIN
 #42 [TCP] 65.208.228.223:80 -> 145.254.160.237:3372
-	Seq: 290236745 Ack: 951058420
-	Flags: ACK
+        Seq: 290236745 Ack: 951058420
+        Flags: ACK
 [END] 43 packets processed
 
 C:\work> ls out2
