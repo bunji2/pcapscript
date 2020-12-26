@@ -2,16 +2,70 @@ package main
 
 import (
 	"encoding/hex"
+	"fmt"
+	"io"
 	"net"
 	"os"
+	"path/filepath"
 
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
+	"github.com/google/gopacket/pcap"
 	"github.com/robertkrimen/otto"
 )
 
-// Param パラメータ
-type Param struct {
+func process(scriptFile, pcapFile, outdir string) (err error) {
+	var handle *pcap.Handle
+
+	var ctx *JSCtx
+	ctx, err = NewJSCtx(scriptFile, outdir)
+	if err != nil {
+		return
+	}
+
+	handle, err = pcap.OpenOffline(pcapFile)
+	if err != nil {
+		return
+	}
+	defer handle.Close()
+
+	_, err2 := ctx.vm.Call("BEGIN", nil, version+"; "+pcap.Version(), scriptFile, pcapFile)
+	if err2 != nil {
+		debug(err2)
+	}
+
+	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
+	for {
+		var packet gopacket.Packet
+		packet, err = packetSource.NextPacket()
+		if err != nil {
+			break
+		}
+
+		debug("[packet]", packet.String())
+
+		err = ctx.processPacket(packet)
+		if err != nil {
+			break
+		}
+
+		ctx.Count = ctx.Count + 1
+	}
+
+	if err == io.EOF {
+		err = nil
+	}
+
+	_, err2 = ctx.vm.Call("END", nil, ctx.Count)
+	if err2 != nil {
+		debug(err2)
+	}
+
+	return
+}
+
+// JSCtx JavaScript実行コンテクスト
+type JSCtx struct {
 	//
 	Count    int
 	filePath string
@@ -19,14 +73,74 @@ type Param struct {
 	script   *otto.Script
 }
 
-// Init 初期化
-func (p *Param) Init() (err error) {
-	p.vm = otto.New()
-	p.script, err = p.vm.Compile(p.filePath, nil)
+// NewJSCtx 新規JavaSript実行コンテクストの生成
+func NewJSCtx(filePath, outdir string) (r *JSCtx, err error) {
+	vm := otto.New()
+	var script *otto.Script
+	script, err = vm.Compile(filePath, nil)
+	if err != nil {
+		return
+	}
+
+	err = vm.Set("hex", hex.Dump)
+	if err != nil {
+		return
+	}
+	err = vm.Set("hwaddr", func(bb []byte) string {
+		return net.HardwareAddr(bb).String()
+	})
+	if err != nil {
+		return
+	}
+	err = vm.Set("ipaddr", func(bb []byte) string {
+		return net.IP(bb).String()
+	})
+	if err != nil {
+		return
+	}
+	err = vm.Set("str", func(bb []byte) string {
+		return string(bb)
+	})
+	if err != nil {
+		return
+	}
+
+	//err = vm.Set("save", saveFile)
+	err = vm.Set("save", func(filePath string, bb []byte) {
+		saveFile(outdir, filePath, bb)
+	})
+	if err != nil {
+		return
+	}
+
+	values := map[string]interface{}{}
+	err = vm.Set("set", func(key string, value interface{}) {
+		values[key] = value
+	})
+	if err != nil {
+		return
+	}
+	err = vm.Set("get", func(key string) interface{} {
+		return values[key]
+	})
+	if err != nil {
+		return
+	}
+
+	_, err = vm.Run(script)
+	if err != nil {
+		return
+	}
+
+	r = &JSCtx{
+		filePath: filePath,
+		vm:       vm,
+		script:   script,
+	}
 	return
 }
 
-// Packet パケット
+// Packet パケットコンテナ
 type Packet struct {
 	Ethernet *layers.Ethernet
 	ARP      *layers.ARP
@@ -34,94 +148,122 @@ type Packet struct {
 	ICMPv4   *layers.ICMPv4
 	TCP      *layers.TCP
 	UDP      *layers.UDP
+	DNS      *layers.DNS
+	/*
+			ADD HERE
+
+		NTP	     *layers.NTP
+
+	*/
 }
 
-func (p *Param) processPacket(packet gopacket.Packet) (err error) {
-
-	/*
-		fmt.Println("--------")
-		pack := readPacket(packet)
-		if pack.TCP != nil {
-			processTCP(pack)
-		} else if pack.UDP != nil {
-			processUDP(pack)
-		} else if pack.ICMPv4 != nil {
-			processICMPv4(pack)
-		} else if pack.ARP != nil {
-			processARP(pack)
-		}
-	*/
+func (p *JSCtx) processPacket(packet gopacket.Packet) (err error) {
 
 	if p.vm == nil {
+		err = fmt.Errorf("initializing error")
 		return
 	}
 
 	//fmt.Println("--------")
 
-	pack := readPacket(packet)
-	err = p.vm.Set("count", p.Count)
-	if err != nil {
-		return
-	}
-	err = p.vm.Set("eth", pack.Ethernet)
-	if err != nil {
-		return
-	}
-	err = p.vm.Set("ip", pack.IPv4)
-	if err != nil {
-		return
-	}
-	err = p.vm.Set("arp", pack.ARP)
-	if err != nil {
-		return
-	}
-	err = p.vm.Set("tcp", pack.TCP)
-	if err != nil {
-		return
-	}
-	err = p.vm.Set("udp", pack.UDP)
-	if err != nil {
-		return
-	}
-	err = p.vm.Set("icmp", pack.ICMPv4)
-	if err != nil {
-		return
-	}
-	err = p.vm.Set("hex", hex.Dump)
-	if err != nil {
-		return
-	}
-	err = p.vm.Set("hwaddr", func(bb []byte) string {
-		return net.HardwareAddr(bb).String()
-	})
-	if err != nil {
-		return
-	}
-	err = p.vm.Set("ipaddr", func(bb []byte) string {
-		return net.IP(bb).String()
-	})
-	if err != nil {
-		return
-	}
-	err = p.vm.Set("str", func(bb []byte) string {
-		return string(bb)
-	})
-	if err != nil {
-		return
-	}
-	err = p.vm.Set("save", saveFile)
-	if err != nil {
-		return
-	}
-	_, err = p.vm.Run(p.script)
-	if err != nil {
-		return
+	//pack := readPacket(packet)
+	pack := readPacket2(packet)
+
+	if pack.TCP != nil {
+		_, err = p.vm.Call("TCP", nil, p.Count, pack.TCP, pack.IPv4, pack.Ethernet)
+		//fmt.Println(err)
+		if err == nil {
+			return
+		}
+		debug("[ignored]", err)
 	}
 
-	p.Count = p.Count + 1
+	if pack.DNS != nil {
+		_, err = p.vm.Call("DNS", nil, p.Count, pack.DNS, pack.UDP, pack.IPv4, pack.Ethernet)
+		//fmt.Println(err)
+		if err == nil {
+			return
+		}
+		debug("[ignored]", err)
+	}
+
+	if pack.UDP != nil {
+		_, err = p.vm.Call("UDP", nil, p.Count, pack.UDP, pack.IPv4, pack.Ethernet)
+		if err == nil {
+			return
+		}
+		debug("[ignored]", err)
+	}
+
+	if pack.ICMPv4 != nil {
+		_, err = p.vm.Call("ICMP", nil, p.Count, pack.ICMPv4, pack.IPv4, pack.Ethernet)
+		if err == nil {
+			return
+		}
+		debug("[ignored]", err)
+	}
+
+	if pack.IPv4 != nil {
+		_, err = p.vm.Call("IP", nil, p.Count, pack.IPv4, pack.Ethernet)
+		if err == nil {
+			return
+		}
+		debug("[ignored]", err)
+	}
+
+	if pack.ARP != nil {
+		_, err = p.vm.Call("ARP", nil, p.Count, pack.ARP, pack.Ethernet)
+		if err == nil {
+			return
+		}
+		debug("[ignored]", err)
+	}
+
+	err = nil
+
+	if pack.Ethernet != nil {
+		_, err2 := p.vm.Call("Eth", nil, p.Count, pack.Ethernet)
+		if err2 != nil {
+			debug("[ignored]", err2)
+		}
+	}
+
 	return
 }
 
+func readPacket2(packet gopacket.Packet) (r Packet) {
+	r = Packet{}
+
+	for _, layer := range packet.Layers() {
+		switch layer.(type) {
+		case *layers.DNS:
+			r.DNS, _ = layer.(*layers.DNS)
+		case *layers.TCP:
+			r.TCP, _ = layer.(*layers.TCP)
+		case *layers.UDP:
+			r.UDP, _ = layer.(*layers.UDP)
+		case *layers.ICMPv4:
+			r.ICMPv4, _ = layer.(*layers.ICMPv4)
+		case *layers.ARP:
+			r.ARP, _ = layer.(*layers.ARP)
+		case *layers.IPv4:
+			r.IPv4, _ = layer.(*layers.IPv4)
+		case *layers.Ethernet:
+			r.Ethernet, _ = layer.(*layers.Ethernet)
+			/*
+					ADD HERE
+				case *layers.NTP:
+					r.NTP, _ = layer.(*layers.NTP)
+			*/
+		default:
+			debug("layer", layer.LayerType().String())
+		}
+	}
+	//fmt.Println(r)
+	return
+}
+
+/*
 func readPacket(packet gopacket.Packet) (r Packet) {
 	r = Packet{}
 	layer := packet.Layer(layers.LayerTypeEthernet)
@@ -159,83 +301,26 @@ func readPacket(packet gopacket.Packet) (r Packet) {
 	}
 	return
 }
+*/
 
-func saveFile(filePath string, bb []byte) {
-	w, err := os.Create(filePath)
+// saveFile saves byte sequence to file
+func saveFile(outdir, filePath string, bb []byte) {
+	filePath = outdir + "/" + filepath.Base(filePath)
+	w, err := os.Create(filepath.Clean(filePath))
 	if err != nil {
 		panic(err)
 	}
-	defer func() {
-		err := w.Close()
-		if err != nil {
-			panic(err)
-		}
-	}()
+
 	_, err = w.Write(bb)
 	if err != nil {
 		panic(err)
 	}
-}
 
-/*
-func processARP(p Packet) {
-	eth := p.Ethernet
-	arp := p.ARP
-	fmt.Printf("[Ethernet] %s -> %s\n", eth.SrcMAC, eth.DstMAC)
-	fmt.Printf("[ARP] AddrType: %s, Protocol: %s\n", arp.AddrType.String(), arp.Protocol.String())
-	fmt.Printf("\tOperation: %d\n", arp.Operation)
-	fmt.Printf("\tSrcHWAddr: %s\n", net.HardwareAddr(arp.SourceHwAddress).String())
-	fmt.Printf("\tSrcPortAddr: %s\n", net.IP(arp.SourceProtAddress).String())
-	fmt.Printf("\tDstHWAddr: %s\n", net.HardwareAddr(arp.DstHwAddress).String())
-	fmt.Printf("\tDstPortAddr: %s\n", net.IP(arp.DstProtAddress).String())
-}
-
-func processICMPv4(p Packet) {
-	eth := p.Ethernet
-	ip := p.IPv4
-	icmp := p.ICMPv4
-	fmt.Printf("[Ethernet] %s -> %s\n", eth.SrcMAC, eth.DstMAC)
-	fmt.Printf("[IPv4] %s -> %s\n", ip.SrcIP, ip.DstIP)
-	fmt.Printf("[ICMPv4] TypeCode: %s\n", icmp.TypeCode.GoString())
-	if len(icmp.Payload) > 0 {
-		fmt.Printf("\tPayload: \n%s", hex.Dump(icmp.Payload))
+	err = w.Close()
+	if err != nil {
+		panic(err)
 	}
 }
-
-func processTCP(p Packet) {
-	eth := p.Ethernet
-	ip := p.IPv4
-	tcp := p.TCP
-	fmt.Printf("[Ethernet] %s -> %s\n", eth.SrcMAC, eth.DstMAC)
-	fmt.Printf("[TCP] %s:%d -> %s:%d\n", ip.SrcIP, tcp.SrcPort, ip.DstIP, tcp.DstPort)
-	fmt.Printf("\tSeq: %d, Ack: %d\n", tcp.Seq, tcp.Ack)
-	flags := []string{}
-	if tcp.SYN {
-		flags = append(flags, "SYN")
-	}
-	if tcp.ACK {
-		flags = append(flags, "ACK")
-	}
-	if tcp.PSH {
-		flags = append(flags, "PSH")
-	}
-	fmt.Printf("\tFlags: %s\n", strings.Join(flags, ","))
-	if len(tcp.Payload) > 0 {
-		fmt.Printf("\tPayload: \n%s", hex.Dump(tcp.Payload))
-	}
-}
-
-func processUDP(p Packet) {
-	eth := p.Ethernet
-	ip := p.IPv4
-	udp := p.UDP
-	fmt.Printf("[Ethernet] %s -> %s\n", eth.SrcMAC, eth.DstMAC)
-	fmt.Printf("[UDP] %s:%d -> %s:%d\n", ip.SrcIP, udp.SrcPort, ip.DstIP, udp.DstPort)
-	if len(udp.Payload) > 0 {
-		fmt.Printf("\tPayload: \n%s", hex.Dump(udp.Payload))
-	}
-}
-*/
 
 // http://mrtc0.hateblo.jp/entry/2016/03/19/232252
 // https://godoc.org/github.com/google/gopacket
