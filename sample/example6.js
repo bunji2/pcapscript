@@ -32,6 +32,9 @@ function TCP(n, tcp, ip, eth) {
     if (tcp.PSH) {
 	    flags.push("PSH");
     }
+    if (tcp.FIN) {
+	    flags.push("FIN");
+    }
     console.log("\tFlags:", flags.join(","));
     if (tcp.Payload.length>0) {
         console.log(hex(tcp.Payload));
