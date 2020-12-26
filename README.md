@@ -258,7 +258,7 @@ Referer: http://www.ethereal.com/development.html
 ```
 ## Example6
 
-example6.js displays each TCP segment fully and saves each payload.
+example6.js displays each packet fully and saves each payload.
 
 ```
 // example6.js
