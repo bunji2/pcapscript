@@ -404,6 +404,12 @@ C:\work> ls out2
 13.tcp.dat  19.tcp.dat  26.tcp.dat  31.tcp.dat  5.tcp.dat
 15.tcp.dat  20.tcp.dat  28.tcp.dat  33.tcp.dat  7.tcp.dat
 ```
+
+## Example7
+
+[Example to extract MSC from PCAP file](msc/README.md)
+
+
 ----
 
 # Reference
