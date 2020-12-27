@@ -111,7 +111,7 @@ function ARP(n, arp, eth) {
     var dst = ipaddr(ip.DstIP);
 
     var msg = "#"+n+ "/" + "ARP(" + arp.Operation + ")";
-    if (ip.Payload.length > 0) {
+    if (arp.Payload.length > 0) {
       msg = msg + "/" + arp.Payload.length + "bytes";
     }
 
