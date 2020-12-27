@@ -429,29 +429,26 @@ C:\work> ls out2
 
 ## Parameters
 
-|parameter|description|reference url|
-|:--|:--|:--|
-|version|version of pcapscript.exe|-|
-|scriptFile|the path of script|-|
-|pcapFile|the path of PCAP file|-|
-|count|the count of packets|-|
-|n|the n-th packet|-|
-|tcp|the object of TCP segment|https://godoc.org/github.com/google/gopacket/layers#TCP|
-|udp|the object of UDP segment|https://godoc.org/github.com/google/gopacket/layers#UDP|
-|icmp|the object of ICMPv4 packet|https://godoc.org/github.com/google/gopacket/layers#ICMPv4|
-|arp|the object of ARP packet|https://godoc.org/github.com/google/gopacket/layers#ARP|
-|ip|the object of IPv4 packet|https://godoc.org/github.com/google/gopacket/layers#IPv4|
-|eth|the object of Ethernet frame|https://godoc.org/github.com/google/gopacket/layers#Ethernet|
+|parameter|type|description|reference url|
+|:--|:--|:--|:--|
+|version|string|version of pcapscript.exe|-|
+|scriptFile|string|the path of script|-|
+|pcapFile|string|the path of PCAP file|-|
+|count|int|the count of packets|-|
+|n|int|the n-th packet|-|
+|tcp|object|the object of TCP segment|https://godoc.org/github.com/google/gopacket/layers#TCP|
+|udp|object|the object of UDP segment|https://godoc.org/github.com/google/gopacket/layers#UDP|
+|icmp|object|the object of ICMPv4 packet|https://godoc.org/github.com/google/gopacket/layers#ICMPv4|
+|arp|object|the object of ARP packet|https://godoc.org/github.com/google/gopacket/layers#ARP|
+|ip|object|the object of IPv4 packet|https://godoc.org/github.com/google/gopacket/layers#IPv4|
+|eth|object|the object of Ethernet frame|https://godoc.org/github.com/google/gopacket/layers#Ethernet|
 
 ## Built-in functions
 
 |function|description|
 |:--|:--|
-|ipaddr (x)|converts x to IP Address format|
-|hwaddr (x)|converts x to MAC Address format|
+|ipaddr (bytes)|converts byte sequence to IP Address format|
+|hwaddr (bytes)|converts byte sequence to MAC Address format|
 |str (bytes)|converts byte sequence to string|
 |hex (bytes)|converts byte sequence to hex string|
 |save (filename, bytes)|saves byte sequence to file under outdir|
-|set (name, value)|sets name and value to global table|
-|get (name)|gets value of name from global table|
-
