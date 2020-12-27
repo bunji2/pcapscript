@@ -1,8 +1,0 @@
-pcapscript msc.js problem5.pcap > problem5.txt
-mscgen -Tpng -o problem5.png problem5.txt
-
-pcapscript msc.js http.pcap > http.txt
-mscgen -Tpng -o http.png http.txt
-
-Mscgen:
-http://www.mcternan.me.uk/mscgen/
