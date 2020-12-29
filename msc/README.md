@@ -8,7 +8,7 @@
 
 [msc.js](msc.js) extracts MSC from PCAP file.
 
-```
+```javascript
 // msc.js
 
 // Variables
