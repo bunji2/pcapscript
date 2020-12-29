@@ -134,6 +134,9 @@ function TCP(n, tcp, ip, eth) {
     if (tcp.PSH) {
 	    flags.push("PSH");
     }
+    if (tcp.FIN) {
+	    flags.push("FIN");
+    }
 
     console.log(
         "#"+n, 
@@ -178,6 +181,9 @@ function TCP(n, tcp, ip, eth) {
     }
     if (tcp.PSH) {
 	    flags.push("PSH");
+    }
+    if (tcp.FIN) {
+	    flags.push("FIN");
     }
 
     console.log(
@@ -252,6 +258,9 @@ function TCP(n, tcp, ip, eth) {
     }
     if (tcp.PSH) {
 	    flags.push("PSH");
+    }
+    if (tcp.FIN) {
+	    flags.push("FIN");
     }
 
     console.log(
