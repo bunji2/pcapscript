@@ -27,7 +27,7 @@ Usage: pcapscript.exe script.js file.pcap [outdir]
 
 Following script displays SrcIP+SrcPort, DstIP+DstPort, TCP flags, and payload of each TCP segment.
  
-```
+```javascript
 // sample.js
 
 function TCP(n, tcp, ip, eth) {
