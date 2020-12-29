@@ -48,7 +48,7 @@ function TCP(n, tcp, ip, eth) {
     var src = ipaddr(ip.SrcIP) + ":" + tcp.SrcPort;
     var dst = ipaddr(ip.DstIP) + ":" + tcp.DstPort;
 
-    flags = [];
+    var flags = [];
     if (tcp.SYN) {
 	    flags.push("SYN");
     }
