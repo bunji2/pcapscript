@@ -4,7 +4,7 @@
 
 eth.js displays SrcMac and DstMac of each ethernet frame.
 
-```
+```javascript
 // eth.js
 function Eth(n, eth) {
     console.log("#"+n, hwaddr(eth.SrcMAC), "->", hwaddr(eth.DstMAC));
@@ -30,7 +30,7 @@ C:\work> pcapscript.exe eth.js sample/http.pcap
 
 ip1.js displays SrcIP and DstIP of each IPv4 packet.
  
-```
+```javascript
 // ip1.js
 function IP(n, ip, eth) {
     console.log("#"+n, ipaddr(ip.SrcIP), "->", ipaddr(ip.DstIP));
@@ -56,7 +56,7 @@ C:\work> pcapscript.exe ip1.js sample/http.pcap
 
 ip2.js counts up SrcIP of each IPv4 packet.
  
-```
+```javascript
 // ip2.js
 
 var ipaddrs = {};
@@ -90,7 +90,7 @@ C:\work> pcapscript.exe ip2.js sample/http.pcap
 
 tcp1.js displays SrcIP+SrcPort and DstIP+DstPort of each TCP segment.
  
-```
+```javascript
 // tcp1.js
 function TCP(n, tcp, ip, eth) {
     console.log(
@@ -120,7 +120,7 @@ C:\work> pcapscript.exe tcp1.js sample/http.pcap
 
 tcp2.js displays SrcIP+SrcPort, DstIP+DstPort, and TCP flags of each TCP segment.
  
-```
+```javascript
 // tcp2.js
 
 function TCP(n, tcp, ip, eth) {
@@ -165,7 +165,7 @@ C:\work> pcapscript.exe tcp2.js sample/http.pcap
 
 tcp3.js displays SrcIP+SrcPort, DstIP+DstPort, TCP flags, and payload of each TCP segment.
  
-```
+```javascript
 // tcp3.js
 
 function TCP(n, tcp, ip, eth) {
@@ -239,7 +239,7 @@ C:\work> pcapscript.exe tcp3.js sample/http.pcap
 
 tcp4.js displays SrcIP+SrcPort, DstIP+DstPort, and TCP flags of each TCP segment and saves each payload.
  
-```
+```javascript
 // tcp4.js
 
 function TCP(n, tcp, ip, eth) {
@@ -305,7 +305,7 @@ Referer: http://www.ethereal.com/development.html
 
 dump.js displays each packet fully and saves each payload.
 
-```
+```javascript
 // dump.js
 
 function BEGIN (version, scriptFile, pcapFile) {
@@ -439,5 +439,3 @@ C:\work> ls out2
 ## MSC
 
 [Example to extract MSC from PCAP file](msc/README.md)
-
-
