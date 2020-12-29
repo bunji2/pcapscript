@@ -175,7 +175,13 @@ func (p *JSCtx) processPacket(packet gopacket.Packet) (err error) {
 		if err == nil {
 			return
 		}
-		debug("[ignored]", err)
+		//fmt.Printf("err.Error()[0:15] = [%s]\n", err.Error()[0:15])
+		if err.Error()[0:15] == "ReferenceError:" {
+			err = nil
+		}
+		if err != nil {
+			return
+		}
 	}
 
 	if pack.DNS != nil {
@@ -184,7 +190,12 @@ func (p *JSCtx) processPacket(packet gopacket.Packet) (err error) {
 		if err == nil {
 			return
 		}
-		debug("[ignored]", err)
+		if err.Error()[0:15] == "ReferenceError:" {
+			err = nil
+		}
+		if err != nil {
+			return
+		}
 	}
 
 	if pack.UDP != nil {
@@ -192,7 +203,12 @@ func (p *JSCtx) processPacket(packet gopacket.Packet) (err error) {
 		if err == nil {
 			return
 		}
-		debug("[ignored]", err)
+		if err.Error()[0:15] == "ReferenceError:" {
+			err = nil
+		}
+		if err != nil {
+			return
+		}
 	}
 
 	if pack.ICMPv4 != nil {
@@ -200,7 +216,12 @@ func (p *JSCtx) processPacket(packet gopacket.Packet) (err error) {
 		if err == nil {
 			return
 		}
-		debug("[ignored]", err)
+		if err.Error()[0:15] == "ReferenceError:" {
+			err = nil
+		}
+		if err != nil {
+			return
+		}
 	}
 
 	if pack.IPv4 != nil {
@@ -208,7 +229,12 @@ func (p *JSCtx) processPacket(packet gopacket.Packet) (err error) {
 		if err == nil {
 			return
 		}
-		debug("[ignored]", err)
+		if err.Error()[0:15] == "ReferenceError:" {
+			err = nil
+		}
+		if err != nil {
+			return
+		}
 	}
 
 	if pack.ARP != nil {
@@ -216,15 +242,18 @@ func (p *JSCtx) processPacket(packet gopacket.Packet) (err error) {
 		if err == nil {
 			return
 		}
-		debug("[ignored]", err)
+		if err.Error()[0:15] == "ReferenceError:" {
+			err = nil
+		}
+		if err != nil {
+			return
+		}
 	}
 
-	err = nil
-
 	if pack.Ethernet != nil {
-		_, err2 := p.vm.Call("Eth", nil, p.Count, pack.Ethernet)
-		if err2 != nil {
-			debug("[ignored]", err2)
+		_, err = p.vm.Call("Eth", nil, p.Count, pack.Ethernet)
+		if err.Error()[0:15] == "ReferenceError:" {
+			err = nil
 		}
 	}
 

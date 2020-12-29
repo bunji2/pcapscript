@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	usageFmt = "Usage: %s script.js file.pcap [outdir] \n"
+	usageFmt = "Usage: %s [ -D ] script.js file.pcap [ outdir ] \n"
 )
 
 func main() {
@@ -15,24 +15,36 @@ func main() {
 }
 
 func run() (exitCode int) {
-	if len(os.Args) < 3 {
+
+	args := os.Args[1:]
+
+	if len(args) > 0 && args[0] == "-D" { // debug mode
+		debugFlag = true
+		args = args[1:]
+	}
+
+	if len(args) < 2 {
 		fmt.Fprintf(os.Stderr, usageFmt, os.Args[0])
 		exitCode = 1
 		return
 	}
 
-	scriptFile := os.Args[1]
-	pcapFile := os.Args[2]
+	scriptFile := args[0]
+	pcapFile := args[1]
 
 	outdir := "."
-	if len(os.Args) > 3 {
-		outdir = os.Args[3]
+	if len(args) > 2 {
+		outdir = args[2]
 	}
 
 	outdir = strings.TrimSpace(outdir)
 	if outdir == "" || outdir == "/" {
 		outdir = "."
 	}
+
+	debug("scriptFile =", scriptFile)
+	debug("pcapFile =", pcapFile)
+	debug("outdir =", outdir)
 
 	err := process(scriptFile, pcapFile, outdir)
 	if err != nil {
