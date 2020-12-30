@@ -29,9 +29,12 @@ func process(scriptFile, pcapFile, outdir string) (err error) {
 	}
 	defer handle.Close()
 
-	_, err2 := ctx.vm.Call("BEGIN", nil, version+"; "+pcap.Version(), scriptFile, pcapFile)
-	if err2 != nil {
-		debug(err2)
+	_, err = ctx.vm.Call("BEGIN", nil, version+"; "+pcap.Version(), scriptFile, pcapFile)
+	if err != nil && err.Error()[0:15] == "ReferenceError:" {
+		err = nil
+	}
+	if err != nil {
+		return
 	}
 
 	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
@@ -56,9 +59,13 @@ func process(scriptFile, pcapFile, outdir string) (err error) {
 		err = nil
 	}
 
-	_, err2 = ctx.vm.Call("END", nil, ctx.Count)
-	if err2 != nil {
-		debug(err2)
+	if err != nil {
+		return
+	}
+
+	_, err = ctx.vm.Call("END", nil, ctx.Count)
+	if err != nil && err.Error()[0:15] == "ReferenceError:" {
+		err = nil
 	}
 
 	return
@@ -252,7 +259,7 @@ func (p *JSCtx) processPacket(packet gopacket.Packet) (err error) {
 
 	if pack.Ethernet != nil {
 		_, err = p.vm.Call("Eth", nil, p.Count, pack.Ethernet)
-		if err.Error()[0:15] == "ReferenceError:" {
+		if err != nil && err.Error()[0:15] == "ReferenceError:" {
 			err = nil
 		}
 	}
