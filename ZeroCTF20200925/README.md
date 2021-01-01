@@ -32,11 +32,11 @@ ICMP でやりとりされるペイロードを確認してみる。
 // payload.js
 
 function ICMP(n, icmp, ip, eth) {
-    console.log("#"+n, ipaddr(ip.SrcIP), "->", ipaddr(ip.DstIP), "TypeCode:"+icmp.TypeCode);
+  console.log("#"+n, ipaddr(ip.SrcIP), "->", ipaddr(ip.DstIP), "TypeCode:"+icmp.TypeCode);
   // ペイロードがあるときのみ HEX 表示する。
-	if (icmp.Payload.length > 0) {
-		console.log(hex(icmp.Payload));
-	}
+  if (icmp.Payload.length > 0) {
+    console.log(hex(icmp.Payload));
+  }
 }
 ```
 
