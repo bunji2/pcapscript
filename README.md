@@ -22,7 +22,7 @@ C:\work>pcapscript.exe
 Usage: pcapscript.exe script.js file.pcap [outdir]
 ```
 
-## [Examples](Examples.md)
+## [Examples](examples/README.md)
 
 
 Following script displays SrcIP+SrcPort, DstIP+DstPort, TCP flags, and payload of each TCP segment.
@@ -100,7 +100,13 @@ C:\work> pcapscript.exe sample.js sample.pcap
 ...
 ```
 
-Other examples are [here](Examples.md).
+Other examples are [here](examples/README.md).
+
+----
+
+## Extracting MSC from PCAP
+
+[Extracting MSC from PCAP](msc/README.md)
 
 ----
 
