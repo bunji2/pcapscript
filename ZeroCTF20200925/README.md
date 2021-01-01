@@ -193,6 +193,7 @@ ICMP パケットの Echo リクエストのペイロードの１バイト目だ
 var flag = "";
 
 function END(count) {
+  // 最後にフラグを表示する
   console.log("FLAG =", flag);
 }
 
