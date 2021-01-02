@@ -213,4 +213,4 @@ C:\work> pcapscript.exe resolve.js icmp.pcap
 FLAG = flag{zerokaranw}
 ```
 
-フラグ： flag{zerokawanw}
+フラグ： flag{zerokaanw}
