@@ -182,7 +182,7 @@ function UDP(n, udp, ip, eth) {
 }
 ```
 ```
-C:\work\pcapscript2\20210110>pcapscript udpcount.js secretmsg.pcap
+C:\work> pcapscript udpcount.js secretmsg.pcap
 35: 358
 32: 923
 10: 7
