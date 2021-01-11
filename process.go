@@ -1,10 +1,8 @@
 package main
 
 import (
-	"encoding/hex"
 	"fmt"
 	"io"
-	"net"
 	"os"
 	"path/filepath"
 
@@ -89,50 +87,69 @@ func NewJSCtx(filePath, outdir string) (r *JSCtx, err error) {
 		return
 	}
 
-	err = vm.Set("hex", hex.Dump)
-	if err != nil {
-		return
-	}
-	err = vm.Set("hwaddr", func(bb []byte) string {
-		return net.HardwareAddr(bb).String()
-	})
-	if err != nil {
-		return
-	}
-	err = vm.Set("ipaddr", func(bb []byte) string {
-		return net.IP(bb).String()
-	})
-	if err != nil {
-		return
-	}
-	err = vm.Set("str", func(bb []byte) string {
-		return string(bb)
-	})
-	if err != nil {
-		return
-	}
+	/*
+		err = vm.Set("hex", hex.Dump)
+		if err != nil {
+			return
+		}
+		err = vm.Set("hwaddr", func(bb []byte) string {
+			return net.HardwareAddr(bb).String()
+		})
+		if err != nil {
+			return
+		}
+		err = vm.Set("ipaddr", func(bb []byte) string {
+			return net.IP(bb).String()
+		})
+		if err != nil {
+			return
+		}
+		err = vm.Set("str", func(bb []byte) string {
+			return string(bb)
+		})
+		if err != nil {
+			return
+		}
+	*/
 
-	//err = vm.Set("save", saveFile)
-	err = vm.Set("save", func(filePath string, bb []byte) {
+	// バイト列をファイルに保存する組み込み関数
+	addBuiltIn("save", func(filePath string, bb []byte) {
 		saveFile(outdir, filePath, bb)
 	})
-	if err != nil {
-		return
+
+	// 組み込み関数をJavaSript実行コンテクストに登録
+	for name, value := range BuiltIns {
+		err = vm.Set(name, value)
+		if err != nil {
+			return
+		}
 	}
 
-	values := map[string]interface{}{}
-	err = vm.Set("set", func(key string, value interface{}) {
-		values[key] = value
-	})
-	if err != nil {
-		return
-	}
-	err = vm.Set("get", func(key string) interface{} {
-		return values[key]
-	})
-	if err != nil {
-		return
-	}
+	/*
+		//err = vm.Set("save", saveFile)
+		err = vm.Set("save", func(filePath string, bb []byte) {
+			saveFile(outdir, filePath, bb)
+		})
+		if err != nil {
+			return
+		}
+	*/
+
+	/*
+		values := map[string]interface{}{}
+		err = vm.Set("set", func(key string, value interface{}) {
+			values[key] = value
+		})
+		if err != nil {
+			return
+		}
+		err = vm.Set("get", func(key string) interface{} {
+			return values[key]
+		})
+		if err != nil {
+			return
+		}
+	*/
 
 	_, err = vm.Run(script)
 	if err != nil {
