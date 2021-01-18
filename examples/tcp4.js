@@ -1,6 +1,6 @@
 // tcp4.js
 
-function TCP(n, tcp, ip, eth) {
+function TCP(n, ts, tcp, ip, eth) {
     var flags = [];
     if (tcp.SYN) {
 	    flags.push("SYN");

@@ -2,27 +2,39 @@
 
 ## Ethernet
 
-eth.js displays SrcMac and DstMac of each ethernet frame.
+eth.js displays timestamp, SrcMac, and DstMac of each ethernet frame.
 
 ```javascript
 // eth.js
-function Eth(n, eth) {
+function Eth(n, ts, eth) {
+    console.log(ts.String());
     console.log("#"+n, hwaddr(eth.SrcMAC), "->", hwaddr(eth.DstMAC));
 }
 ```
 
 ```
 C:\work> pcapscript.exe eth.js sample/http.pcap
+2004-05-13 19:17:07.311224 +0900 JST
 #0 00:00:01:00:00:00 -> fe:ff:20:00:01:00
+2004-05-13 19:17:08.222534 +0900 JST
 #1 fe:ff:20:00:01:00 -> 00:00:01:00:00:00
+2004-05-13 19:17:08.222534 +0900 JST
 #2 00:00:01:00:00:00 -> fe:ff:20:00:01:00
+2004-05-13 19:17:08.222534 +0900 JST
 #3 00:00:01:00:00:00 -> fe:ff:20:00:01:00
+2004-05-13 19:17:08.78334 +0900 JST
 #4 fe:ff:20:00:01:00 -> 00:00:01:00:00:00
+2004-05-13 19:17:08.993643 +0900 JST
 #5 fe:ff:20:00:01:00 -> 00:00:01:00:00:00
+2004-05-13 19:17:09.12383 +0900 JST
 #6 00:00:01:00:00:00 -> fe:ff:20:00:01:00
+2004-05-13 19:17:09.12383 +0900 JST
 #7 fe:ff:20:00:01:00 -> 00:00:01:00:00:00
+2004-05-13 19:17:09.324118 +0900 JST
 #8 00:00:01:00:00:00 -> fe:ff:20:00:01:00
+2004-05-13 19:17:09.754737 +0900 JST
 #9 fe:ff:20:00:01:00 -> 00:00:01:00:00:00
+2004-05-13 19:17:09.864896 +0900 JST
 ...
 ```
 
@@ -32,7 +44,7 @@ ip1.js displays SrcIP and DstIP of each IPv4 packet.
  
 ```javascript
 // ip1.js
-function IP(n, ip, eth) {
+function IP(n, ts, ip, eth) {
     console.log("#"+n, ipaddr(ip.SrcIP), "->", ipaddr(ip.DstIP));
 }
 ```
@@ -73,7 +85,7 @@ function END (count) {
     }
 }
 
-function IP (n, ip, eth) {
+function IP (n, ts, ip, eth) {
     add(ipaddr(ip.SrcIP));
 }
 ```
@@ -92,7 +104,7 @@ tcp1.js displays SrcIP+SrcPort and DstIP+DstPort of each TCP segment.
  
 ```javascript
 // tcp1.js
-function TCP(n, tcp, ip, eth) {
+function TCP(n, ts, tcp, ip, eth) {
     console.log(
         "#"+n, 
         ipaddr(ip.SrcIP) +":"+ tcp.SrcPort, 
@@ -123,7 +135,7 @@ tcp2.js displays SrcIP+SrcPort, DstIP+DstPort, and TCP flags of each TCP segment
 ```javascript
 // tcp2.js
 
-function TCP(n, tcp, ip, eth) {
+function TCP(n, ts, tcp, ip, eth) {
     var flags = [];
     if (tcp.SYN) {
 	    flags.push("SYN");
@@ -171,7 +183,7 @@ tcp3.js displays SrcIP+SrcPort, DstIP+DstPort, TCP flags, and payload of each TC
 ```javascript
 // tcp3.js
 
-function TCP(n, tcp, ip, eth) {
+function TCP(n, ts, tcp, ip, eth) {
     var flags = [];
     if (tcp.SYN) {
 	    flags.push("SYN");
@@ -248,7 +260,7 @@ tcp4.js displays SrcIP+SrcPort, DstIP+DstPort, and TCP flags of each TCP segment
 ```javascript
 // tcp4.js
 
-function TCP(n, tcp, ip, eth) {
+function TCP(n, ts, tcp, ip, eth) {
     var flags = [];
     if (tcp.SYN) {
 	    flags.push("SYN");
@@ -328,7 +340,7 @@ function END(count) {
     console.log("[END]", count, "packets processed");
 }
 
-function UDP(n, udp, ip, eth) {
+function UDP(n, ts, udp, ip, eth) {
     console.log("#"+n, "[UDP]", ipaddr(ip.SrcIP)+":"+udp.SrcPort, "->", 
         ipaddr(ip.DstIP) + ":" + udp.DstPort);
     if (udp.Payload.length>0) {
@@ -337,7 +349,7 @@ function UDP(n, udp, ip, eth) {
     }
 }
 
-function TCP(n, tcp, ip, eth) {
+function TCP(n, ts, tcp, ip, eth) {
     console.log("#"+n, "[TCP]", ipaddr(ip.SrcIP) +":"+ tcp.SrcPort, "->", 
         ipaddr(ip.DstIP) + ":" + tcp.DstPort);
     console.log("\tSeq:", tcp.Seq, "Ack:", tcp.Ack);
@@ -361,7 +373,7 @@ function TCP(n, tcp, ip, eth) {
     }
 }
 
-function ICMP(n, icmp, ip, eth) {
+function ICMP(n, ts, icmp, ip, eth) {
     console.log("#"+n, "[ICMPv4]", ipaddr(ip.SrcIP), "->", ipaddr(ip.DstIP));
 	console.log("TypeCode:", icmp.TypeCode);
 	if (icmp.Payload.length > 0) {
@@ -370,7 +382,7 @@ function ICMP(n, icmp, ip, eth) {
 	}
 }
 
-function ARP(n, arp, eth) {
+function ARP(n, ts, arp, eth) {
     console.log("#"+n, "[ARP] AddrType:", arp.AddrType, "Protocol:", arp.Protocol);
 	console.log("\tOperation:", arp.Operation);
 	console.log("\tSrcHWAddr:", hwaddr(arp.SourceHwAddress));

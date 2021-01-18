@@ -11,7 +11,7 @@ function END(count) {
     console.log("[END]", count, "packets processed");
 }
 
-function UDP(n, udp, ip, eth) {
+function UDP(n, ts, udp, ip, eth) {
     console.log("#"+n, "[UDP]", ipaddr(ip.SrcIP)+":"+udp.SrcPort, "->", ipaddr(ip.DstIP) + ":" + udp.DstPort);
     if (udp.Payload.length>0) {
         console.log(hex(udp.Payload));
@@ -19,7 +19,7 @@ function UDP(n, udp, ip, eth) {
     }
 }
 
-function TCP(n, tcp, ip, eth) {
+function TCP(n, ts, tcp, ip, eth) {
     console.log("#"+n, "[TCP]", ipaddr(ip.SrcIP) +":"+ tcp.SrcPort, "->", ipaddr(ip.DstIP) + ":" + tcp.DstPort);
     console.log("\tSeq:", tcp.Seq, "Ack:", tcp.Ack);
     var flags = [];
@@ -42,7 +42,7 @@ function TCP(n, tcp, ip, eth) {
     }
 }
 
-function ICMP(n, icmp, ip, eth) {
+function ICMP(n, ts, icmp, ip, eth) {
     console.log("#"+n, "[ICMPv4]", ipaddr(ip.SrcIP), "->", ipaddr(ip.DstIP));
 	console.log("TypeCode:", icmp.TypeCode);
 	if (icmp.Payload.length > 0) {
@@ -51,7 +51,7 @@ function ICMP(n, icmp, ip, eth) {
 	}
 }
 
-function ARP(n, arp, eth) {
+function ARP(n, ts, arp, eth) {
     console.log("#"+n, "[ARP] AddrType:", arp.AddrType, "Protocol:", arp.Protocol);
 	console.log("\tOperation:", arp.Operation);
 	console.log("\tSrcHWAddr:", hwaddr(arp.SourceHwAddress));
@@ -60,7 +60,7 @@ function ARP(n, arp, eth) {
 	console.log("\tDstProtAddr:", ipaddr(arp.DstProtAddress));
 }
 
-function IP(n, ip, eth) {
+function IP(n, ts, ip, eth) {
     console.log("#"+n, "[IPv4]", ipaddr(ip.SrcIP), "->", ipaddr(ip.DstIP));
 	if (ip.Payload.length > 0) {
 		console.log(hex(ip.Payload));
@@ -68,7 +68,7 @@ function IP(n, ip, eth) {
 	}
 }
 
-function Eth(n, eth) {
+function Eth(n, ts, eth) {
     console.log("#"+n, "[Eth]", hwaddr(eth.SrcMAC), "->", hwaddr(eth.DstMAC));
     if (eth.Payload.length>0) {
         console.log(hex(eth.Payload));

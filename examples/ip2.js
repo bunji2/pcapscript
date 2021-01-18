@@ -14,6 +14,6 @@ function END (count) {
     }
 }
 
-function IP (n, ip, eth) {
+function IP (n, ts, ip, eth) {
     add(ipaddr(ip.SrcIP));
 }
