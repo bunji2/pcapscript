@@ -30,7 +30,7 @@ Following script displays SrcIP+SrcPort, DstIP+DstPort, TCP flags, and payload o
 ```javascript
 // sample.js
 
-function TCP(n, tcp, ip, eth) {
+function TCP(n, ts, tcp, ip, eth) {
     var flags = [];
     if (tcp.SYN) {
 	    flags.push("SYN");
@@ -110,43 +110,6 @@ Other examples are [here](examples/README.md).
 
 ----
 
-# Reference
+## Reference
 
-## Main functions
-
-|function|description|
-|:--|:--|
-|BEGIN (version, scriptFile, pcapFile)|"BEGIN" is called firstly|
-|END (count)|"END" is called finally|count: the count of packets|
-|TCP (n, tcp, ip, eth)|"TCP" is called when packet is TCP segment|
-|UDP (n, udp, ip, eth)|"UDP" is called when packet is UDP segment|
-|ICMP (n, icmp, ip, eth)|"ICMP" is called when packet is ICMPv4 packet|
-|IP (n, ip, eth)|"IP" is called when packet is IPv4 packet|
-|ARP (n, arp, eth)|"ARP" is called when packet is ARP packet|
-|Eth (n, eth)|"Eth" is called when packet is Ethernet frame|
-
-## Parameters
-
-|parameter|type|description|reference url|
-|:--|:--|:--|:--|
-|version|string|version of pcapscript.exe|-|
-|scriptFile|string|the path of script|-|
-|pcapFile|string|the path of PCAP file|-|
-|count|int|the count of packets|-|
-|n|int|the n-th packet|-|
-|tcp|object|the object of TCP segment|https://godoc.org/github.com/google/gopacket/layers#TCP|
-|udp|object|the object of UDP segment|https://godoc.org/github.com/google/gopacket/layers#UDP|
-|icmp|object|the object of ICMPv4 packet|https://godoc.org/github.com/google/gopacket/layers#ICMPv4|
-|arp|object|the object of ARP packet|https://godoc.org/github.com/google/gopacket/layers#ARP|
-|ip|object|the object of IPv4 packet|https://godoc.org/github.com/google/gopacket/layers#IPv4|
-|eth|object|the object of Ethernet frame|https://godoc.org/github.com/google/gopacket/layers#Ethernet|
-
-## Built-in functions
-
-|function|description|
-|:--|:--|
-|ipaddr (bytes)|converts byte sequence to IP Address format|
-|hwaddr (bytes)|converts byte sequence to MAC Address format|
-|str (bytes)|converts byte sequence to string|
-|hex (bytes)|converts byte sequence to hex string|
-|save (filename, bytes)|saves byte sequence to file under outdir|
+[PCAPScript API](API.md)

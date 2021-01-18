@@ -192,9 +192,10 @@ func (p *JSCtx) processPacket(packet gopacket.Packet) (err error) {
 
 	//pack := readPacket(packet)
 	pack := readPacket2(packet)
+	ts := packet.Metadata().Timestamp
 
 	if pack.TCP != nil {
-		_, err = p.vm.Call("TCP", nil, p.Count, pack.TCP, pack.IPv4, pack.Ethernet)
+		_, err = p.vm.Call("TCP", nil, p.Count, ts, pack.TCP, pack.IPv4, pack.Ethernet)
 		//fmt.Println(err)
 		if err == nil {
 			return
@@ -209,7 +210,7 @@ func (p *JSCtx) processPacket(packet gopacket.Packet) (err error) {
 	}
 
 	if pack.DNS != nil {
-		_, err = p.vm.Call("DNS", nil, p.Count, pack.DNS, pack.UDP, pack.IPv4, pack.Ethernet)
+		_, err = p.vm.Call("DNS", nil, p.Count, ts, pack.DNS, pack.UDP, pack.IPv4, pack.Ethernet)
 		//fmt.Println(err)
 		if err == nil {
 			return
@@ -223,7 +224,7 @@ func (p *JSCtx) processPacket(packet gopacket.Packet) (err error) {
 	}
 
 	if pack.UDP != nil {
-		_, err = p.vm.Call("UDP", nil, p.Count, pack.UDP, pack.IPv4, pack.Ethernet)
+		_, err = p.vm.Call("UDP", nil, p.Count, ts, pack.UDP, pack.IPv4, pack.Ethernet)
 		if err == nil {
 			return
 		}
@@ -236,7 +237,7 @@ func (p *JSCtx) processPacket(packet gopacket.Packet) (err error) {
 	}
 
 	if pack.ICMPv4 != nil {
-		_, err = p.vm.Call("ICMP", nil, p.Count, pack.ICMPv4, pack.IPv4, pack.Ethernet)
+		_, err = p.vm.Call("ICMP", nil, p.Count, ts, pack.ICMPv4, pack.IPv4, pack.Ethernet)
 		if err == nil {
 			return
 		}
@@ -249,7 +250,7 @@ func (p *JSCtx) processPacket(packet gopacket.Packet) (err error) {
 	}
 
 	if pack.IPv4 != nil {
-		_, err = p.vm.Call("IP", nil, p.Count, pack.IPv4, pack.Ethernet)
+		_, err = p.vm.Call("IP", nil, p.Count, ts, pack.IPv4, pack.Ethernet)
 		if err == nil {
 			return
 		}
@@ -262,7 +263,7 @@ func (p *JSCtx) processPacket(packet gopacket.Packet) (err error) {
 	}
 
 	if pack.ARP != nil {
-		_, err = p.vm.Call("ARP", nil, p.Count, pack.ARP, pack.Ethernet)
+		_, err = p.vm.Call("ARP", nil, p.Count, ts, pack.ARP, pack.Ethernet)
 		if err == nil {
 			return
 		}
@@ -275,7 +276,7 @@ func (p *JSCtx) processPacket(packet gopacket.Packet) (err error) {
 	}
 
 	if pack.Ethernet != nil {
-		_, err = p.vm.Call("Eth", nil, p.Count, pack.Ethernet)
+		_, err = p.vm.Call("Eth", nil, p.Count, ts, pack.Ethernet)
 		if err != nil && err.Error()[0:15] == "ReferenceError:" {
 			err = nil
 		}
