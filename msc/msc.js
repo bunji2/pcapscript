@@ -44,7 +44,7 @@ function END(count) {
   console.log("}");
 }
 
-function TCP(n, tcp, ip, eth) {
+function TCP(n, ts, tcp, ip, eth) {
     var src = ipaddr(ip.SrcIP) + ":" + tcp.SrcPort;
     var dst = ipaddr(ip.DstIP) + ":" + tcp.DstPort;
 
@@ -70,7 +70,7 @@ function TCP(n, tcp, ip, eth) {
     add_edge(src, dst, msg);
 }
 
-function UDP(n, udp, ip, eth) {
+function UDP(n, ts, udp, ip, eth) {
     var src = ipaddr(ip.SrcIP) + ":" + udp.SrcPort;
     var dst = ipaddr(ip.DstIP) + ":" + udp.DstPort;
 
@@ -82,7 +82,7 @@ function UDP(n, udp, ip, eth) {
     add_edge(src, dst, msg);
 }
 
-function ICMP(n, icmp, ip, eth) {
+function ICMP(n, ts, icmp, ip, eth) {
     var src = ipaddr(ip.SrcIP);
     var dst = ipaddr(ip.DstIP);
 
@@ -94,7 +94,7 @@ function ICMP(n, icmp, ip, eth) {
     add_edge(src, dst, msg);
 }
 
-function IP(n, ip, eth) {
+function IP(n, ts, ip, eth) {
     var src = ipaddr(ip.SrcIP);
     var dst = ipaddr(ip.DstIP);
 
@@ -106,7 +106,7 @@ function IP(n, ip, eth) {
     add_edge(src, dst, msg);
 }
 
-function ARP(n, arp, eth) {
+function ARP(n, ts, arp, eth) {
     var src = ipaddr(ip.SrcIP);
     var dst = ipaddr(ip.DstIP);
 
@@ -118,7 +118,7 @@ function ARP(n, arp, eth) {
     add_edge(src, dst, msg);
 }
 
-function Eth(n, eth) {
+function Eth(n, ts, eth) {
     var src = hwaddr(eth.SrcMAC);
     var dst = hwaddr(eth.DstMAC);
 
